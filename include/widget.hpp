@@ -6,6 +6,14 @@
 #include "raylib.h"
 
 
+class pageContent{
+	public: 
+		pageConent();
+		~pageContent();
+		void drawContent();
+	private:
+};
+
 class page{
 	public:
 		page(int width=50, int height=25, Color color=BLACK);
@@ -31,6 +39,7 @@ class page{
 		int height;
 		Color color;
 		const char* title;
+		pageContent content;
 };
 
 class pageBar{
