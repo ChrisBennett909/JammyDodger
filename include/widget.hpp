@@ -1,18 +1,12 @@
-#pragma
+#pragma once
 
 #include<iostream>
 #include<vector>
 #include<memory>
+#include<string>
 #include "raylib.h"
+#include "pageContent.hpp"
 
-
-class pageContent{
-	public: 
-		pageConent();
-		~pageContent();
-		void drawContent();
-	private:
-};
 
 class page{
 	public:
@@ -23,6 +17,8 @@ class page{
 		int getHeight();
 		int getX();
 		int getY();
+		int getIndex();
+		void setIndex(int index);
 		Color getColor();
 		const char* getTitle();
 		Rectangle getRec();
@@ -37,6 +33,7 @@ class page{
 		int x, y;
 		int width;
 		int height;
+		int index;
 		Color color;
 		const char* title;
 		pageContent content;
@@ -51,17 +48,18 @@ class pageBar{
 		void addPage(const char* pageName);
 		bool removePage(const char* pageName);
 		void drawPageBar();
-		void activatePage(const char* title);
+		void activatePage(int pageIndex);
+		void update(Vector2 mousePos);
 		~pageBar();
 		
-		std::vector<std::unique_ptr<page>> pages;
 		
 	private:
 		int width;
 		int height;
 		int nextFree;
 		Color color;
-		const char* activePage;
+		int activePage = 0;
+		std::vector<std::unique_ptr<page>> pages;
 };
 
 class widget{
@@ -69,14 +67,13 @@ class widget{
 		widget(int width=500, int height=500, const char*title="Jammy");
 		int getWidth();
 		int getHeight();
-		void setPage(const char*pageName);
+		void setPage(const char* title);
+		void addPage(const char* title);
 		void setPColor(Color newColor);
 		void setSColor(Color newColor);
 		void runJammyDodger();
 		void update();
 		~widget();
-
-		std::unique_ptr<pageBar> jammyBar;
 
 	private:
 		int width;
@@ -84,6 +81,7 @@ class widget{
 		const char* title;
 		Color pColor;
 		Color sColor;
+		std::unique_ptr<pageBar> jammyBar;
 };
 
 

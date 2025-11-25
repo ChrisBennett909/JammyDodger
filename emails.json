@@ -1,0 +1,8 @@
+[
+	{
+		"from": "testing@test.com",
+		"to": "me@me.com",
+		"subject": "Testing subject",
+		"body": "This is a test and here is an email body"
+	}
+]

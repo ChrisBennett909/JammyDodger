@@ -1,8 +1,9 @@
 #include<iostream>
 #include<vector>
 #include<memory>
-#include "widget.hpp"
 #include "raylib.h"
+#include "widget.hpp"
+
 
 
 //------------------Widget----------------------------------------
@@ -34,6 +35,10 @@ void widget::runJammyDodger(){
 	}
 }
 
+void widget::addPage(const char* title){
+	jammyBar->addPage(title);
+}
+
 void widget::update(){
 	//check if mouse is down
 	//check if mouse is over a button
@@ -43,27 +48,27 @@ void widget::update(){
 	if (mousePressed){
 		Vector2 mousePos = GetMousePosition();
 
-		for (const auto& p : jammyBar->pages){
-			if (CheckCollisionPointRec(mousePos, p->getRec())){
-				jammyBar->activatePage(p->getTitle());
-			}
-		}
+		jammyBar->update(mousePos);
+		
 	}
+}
+
+void widget::setPage(const char* title){
+	//use unordered_map mapping between pageName and pages vector
 }
 
 //----------------------PageBar----------------------------
 pageBar::~pageBar(){}
-void widget::setPage(const char* pageName){
-	//use unordered_map mapping between pageName and pages vector
-}
-
-
 pageBar::pageBar(int width,int height,Color color){
 	this->width = width;
 	this->height = height;
 	this->color = color;
 	this->nextFree = 0;
 }
+
+int pageBar::getWidth(){return width;}
+int pageBar::getHeight(){return height;}
+int pageBar::getNextFree(){return nextFree;}
 
 void pageBar::drawPageBar(){
 	DrawRectangle(0,0,width, height, color);
@@ -76,25 +81,31 @@ void pageBar::drawPageBar(){
 		DrawRectangle(x, height - p->getHeight(), p->getWidth(), p->getHeight(), p->getColor());
 		DrawText(p->getTitle(), x+5, height-p->getHeight()+(p->getHeight() / 3), 10, GRAY);
 
-		x = x + p->getWidth() + 10;
+		x = x + p->getWidth() + 2;
 	}
 }
 
 void pageBar::addPage(const char* title){
 	pages.push_back(std::make_unique<page>());
 	pages[nextFree]->setTitle(title);
+	pages[nextFree]->setIndex(nextFree);
+	if (nextFree == 0){pages[nextFree]->setColor(DARKBLUE);}
 	nextFree++;
 }
 
-void pageBar::activatePage(const char* title){
+void pageBar::activatePage(int pageIndex){
 	//Return tab to normal colour 
 	//change colour of new active tab
-	activePage = title;
 	
-	//Change this to use unordered_map
-	for (const auto& p:pages){
-		if (p->getTitle() == activePage){
-			p->setColor(DARKBLUE);
+	pages[activePage]->setColor(BLACK);
+	pages[pageIndex]->setColor(DARKBLUE);
+	activePage = pageIndex;
+}
+
+void pageBar::update(Vector2 mousePos){
+	for (const auto& p : pages){
+		if (CheckCollisionPointRec(mousePos, p->getRec())){
+			activatePage(p->getIndex());
 		}
 	}
 }
@@ -112,8 +123,10 @@ int page::getHeight(){return height;}
 Color page::getColor(){return color;}
 int page::getX(){return x;}
 int page::getY(){return y;}
+int page::getIndex(){return index;}
 void page::setX(int newX){x=newX;}
 void page::setY(int newY){y=newY;}
+void page::setIndex(int newIndex){index = newIndex;}
 void page::setColor(Color newColor){color = newColor;}
 const char* page::getTitle(){return title;}
 Rectangle page::getRec(){return Rectangle{(float)x, (float)y, (float)width, (float)height};}
